@@ -5,7 +5,7 @@
 #              and any generic transaction / loyalty CSV
 # Run: streamlit run clv_app.py
 # ============================================================
-
+!pip install plotly
 import streamlit as st
 import pandas as pd
 import numpy as np
