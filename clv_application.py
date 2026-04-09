@@ -223,7 +223,7 @@ def build_rfm_unknown(df, schema):
 
 @st.cache_data(show_spinner=False)
 def run_regression(rfm_json):
-   rfm = pd.read_json(io.StringIO(rfm_json))
+    rfm = pd.read_json(io.StringIO(rfm_json))
     cap = rfm["CLV"].quantile(0.99)
     rfm_m = rfm[rfm["CLV"] <= cap].copy()
     features = [f for f in ["Recency","Frequency","Monetary","Lifespan_Months"] if f in rfm_m.columns]
