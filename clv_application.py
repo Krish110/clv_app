@@ -246,7 +246,7 @@ def run_regression(rfm_json):
 
 @st.cache_data(show_spinner=False)
 def run_clustering(rfm_json, k):
-   rfm = pd.read_json(io.StringIO(rfm_json))
+    rfm = pd.read_json(io.StringIO(rfm_json))
     cf  = [f for f in ["Recency","Frequency","Monetary"] if f in rfm.columns]
     sc  = StandardScaler().fit_transform(rfm[cf].fillna(0))
     km  = KMeans(n_clusters=k, random_state=42, n_init=10)
