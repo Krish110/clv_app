@@ -9,6 +9,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import io
 import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.preprocessing import StandardScaler
@@ -222,7 +223,7 @@ def build_rfm_unknown(df, schema):
 
 @st.cache_data(show_spinner=False)
 def run_regression(rfm_json):
-    rfm = pd.read_json(rfm_json)
+   rfm = pd.read_json(io.StringIO(rfm_json))
     cap = rfm["CLV"].quantile(0.99)
     rfm_m = rfm[rfm["CLV"] <= cap].copy()
     features = [f for f in ["Recency","Frequency","Monetary","Lifespan_Months"] if f in rfm_m.columns]
@@ -245,7 +246,7 @@ def run_regression(rfm_json):
 
 @st.cache_data(show_spinner=False)
 def run_clustering(rfm_json, k):
-    rfm = pd.read_json(rfm_json)
+   rfm = pd.read_json(io.StringIO(rfm_json))
     cf  = [f for f in ["Recency","Frequency","Monetary"] if f in rfm.columns]
     sc  = StandardScaler().fit_transform(rfm[cf].fillna(0))
     km  = KMeans(n_clusters=k, random_state=42, n_init=10)
@@ -344,12 +345,12 @@ if rfm is None or len(rfm) < 5:
 # ── Regression ───────────────────────────────────────────────
 with st.spinner("Running regression..."):
     rfm_json, r2, rmse, features, y_test_list, y_pred_list = run_regression(rfm.to_json())
-    rfm = pd.read_json(rfm_json)
+    rfm = pd.read_json(io.StringIO(rfm_json))
 
 # ── Clustering ───────────────────────────────────────────────
 with st.spinner(f"K-Means clustering (k={n_clusters})..."):
     rfm_json = run_clustering(rfm.to_json(), n_clusters)
-    rfm = pd.read_json(rfm_json)
+    rfm = pd.read_json(io.StringIO(rfm_json))
 
 st.success(
     f"✅ {df_raw.shape[0]:,} rows → **{len(rfm):,} customers**  |  "
